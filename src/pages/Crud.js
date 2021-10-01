@@ -1,15 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Toast } from "primereact/toast";
-import { Button } from "primereact/button";
-import { FileUpload } from "primereact/fileupload";
-import { Rating } from "primereact/rating";
-import { Toolbar } from "primereact/toolbar";
-import { InputText } from "primereact/inputtext";
-import { ProductService } from "../service/ProductService";
 
 /*
 Store
 */
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
 import store from "../store/store";
 
 /*
@@ -18,7 +14,7 @@ Services
 import PokemonDataService from "../service/PokemonDataService";
 import { PokemonList } from "../components/PokemonList";
 
-export const Crud = () => {
+export const Crud = (props) => {
     /*
     Variables
     */
@@ -30,7 +26,17 @@ export const Crud = () => {
     }, []);
 
     const loadPokemonList = () => {
-        lstPokemon && lstPokemon.length > 0 ? setLstPokemon(lstPokemon) : PokemonDataService.list("?offset=0&limit=150").then((response) => setLstPokemon(response.results));
+        //lstPokemon && lstPokemon.length > 0 ? setLstPokemon(lstPokemon) : PokemonDataService.list("?offset=0&limit=150").then((response) => setLstPokemon(response.results));
+        console.log("props.lstPokemon", props.lstPokemon);
+        if (props.lstPokemon) {
+            setLstPokemon(props.lstPokemon);
+        } else {
+            PokemonDataService.list("?offset=0&limit=150").then((response) => {
+                setLstPokemon(response.results);
+                store.dispatch(actions.pokemonsAddedToList(response));
+                //props.pokemonsAddedToList(response);
+            });
+        }
     };
 
     return (
@@ -44,3 +50,22 @@ export const Crud = () => {
         </div>
     );
 };
+
+/*
+Map state and dispatch
+*/
+const mapStateToProps = (state) => {
+    return {
+        lstPokemon: state.lstPokemon,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        pokemonsAddedToList: (payload) => dispatch(actions.pokemonsAddedToList(payload)),
+        //pokemonAddedToList: (payload) => dispatch(actions.pokemonAddedToList(payload)),
+        pokemonSelected: (payload) => dispatch(actions.pokemonSelected(payload)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps);

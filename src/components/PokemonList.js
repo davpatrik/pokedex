@@ -9,6 +9,12 @@ import { InputText } from "primereact/inputtext";
 import PokemonDataService from "../service/PokemonDataService";
 import { PokemonDetail } from "./PokemonDetail";
 
+/*
+Store
+*/
+import { connect } from "react-redux";
+import * as actions from "../store/actions";
+
 export const PokemonList = (props) => {
     /*
     Variables
@@ -100,23 +106,6 @@ export const PokemonList = (props) => {
         );
     };
 
-    const imageBodyTemplate2 = (rowData) => {
-        //let pokemon = fillPokemonMap(rowData.name);
-        //let pokemon = pokemonMap.get(rowData.name);
-        let pokemon = new Promise((resolve, reject) => {
-            resolve(fillPokemonMap(rowData.name));
-        });
-        pokemon.then((poke) => {
-            //console.log("pokemon: ", poke);
-            return (
-                <>
-                    <span className="p-column-title">Image</span>
-                    <img src={poke && poke.sprites ? poke.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="100" />
-                </>
-            );
-        });
-    };
-
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
@@ -155,3 +144,22 @@ export const PokemonList = (props) => {
         </div>
     );
 };
+
+/*
+Map state and dispatch
+*/
+const mapStateToProps = (state) => {
+    return {
+        lstPokemon: state.lstPokemon,
+        selPokemon: state.selPokemon,
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+    return {
+        pokemonAddedToList: (payload) => dispatch(actions.pokemonAddedToList(payload)),
+        pokemonSelected: (payload) => dispatch(actions.pokemonSelected(payload)),
+    };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps);

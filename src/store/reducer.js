@@ -10,17 +10,34 @@ const initialState = {
 
 export default function reducer(state = initialState, action) {
     switch (action.type) {
-        case actions.POKEMON_ADDED_TO_LIST:
-            return [
+        case actions.POKEMONS_ADDED_TO_LIST:
+            console.log("POKEMONS_ADDED_TO_LIST", action);
+            return {
                 ...state,
-                {
-                    name: action.payload.name,
-                    url: action.payload.url,
-                    pokemon: action.payload.pokemon,
-                },
-            ];
+                lstPokemon: action.payload,
+            };
+        case actions.POKEMON_ADDED_TO_LIST:
+            console.log("POKEMON_ADDED_TO_LIST", action);
+            let _lstPokemon = state.lstPokemon;
+            //let _founded = _lstPokemon.filter((pokemon) => pokemon.name === action.payload.name);
+
+            let _lstPokemonFiltered = _lstPokemon && _lstPokemon.length > 0 ? _lstPokemon.filter((pokemon) => pokemon.name !== action.payload.name) : [];
+            //if (_founded && _founded.length > 0) {
+            //  return state;
+            //} else {
+            //_lstPokemon.push(action.payload);
+            _lstPokemonFiltered.push(action.payload);
+            return {
+                ...state,
+                lstPokemon: _lstPokemon,
+            };
+        //}
         case actions.POKEMON_SELECTED:
-            return state.lstPokemon.filter((pokemon) => pokemon.name === action.payload.name)[0];
+            console.log("POKEMON_SELECTED", action);
+            return {
+                ...state,
+                selPokemon: action.payload,
+            };
         default:
             return state;
     }

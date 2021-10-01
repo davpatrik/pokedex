@@ -28,31 +28,15 @@ import "./App.scss";
 /*
 Store
 */
-import store from "./store/store";
+//import store from "./store/store";
 import * as actions from "./store/actions";
+import { createStore, applyMiddleware } from "redux";
+import { Provider } from "react-redux";
+import reduxThunk from "redux-thunk";
+import reducer from "./store/reducer";
 
-store.subscribe(() => {
-    console.log("store changes: ", store.getState());
-});
-
-console.log("app.store");
-console.log(store);
-console.log(store.getState());
-
-let payload = {
-    name: "bulbasaur",
-    url: "https://pokeapi.co/api/v2/pokemon/1/",
-};
-
-store.dispatch(actions.pokemonAddedToList(payload));
-
-console.log(store.getState());
-
-/*
-const App = () => {
-    return <div></div>;
-};
-*/
+//const store = createStore(reducer, applyMiddleware(reduxThunk));
+const store = createStore(reducer);
 
 const App = () => {
     const [layoutMode, setLayoutMode] = useState("static");
@@ -220,31 +204,33 @@ const App = () => {
     });
 
     return (
-        <div className={wrapperClass} onClick={onWrapperClick}>
-            <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
+        <Provider store={store}>
+            <div className={wrapperClass} onClick={onWrapperClick}>
+                <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-            <div className="layout-sidebar" onClick={onSidebarClick}>
-                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-            </div>
-
-            <div className="layout-main-container">
-                <div className="layout-main">
-                    <Route path="/" exact component={Dashboard} />
-                    <Route path="/timeline" component={TimelineDemo} />
-                    <Route path="/crud" component={Crud} />
-                    <Route path="/crud2" component={Crud2} />
-                    <Route path="/empty" component={EmptyPage} />
+                <div className="layout-sidebar" onClick={onSidebarClick}>
+                    <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
                 </div>
 
-                <AppFooter layoutColorMode={layoutColorMode} />
+                <div className="layout-main-container">
+                    <div className="layout-main">
+                        <Route path="/" exact component={Dashboard} />
+                        <Route path="/timeline" component={TimelineDemo} />
+                        <Route path="/crud" component={Crud} />
+                        <Route path="/crud2" component={Crud2} />
+                        <Route path="/empty" component={EmptyPage} />
+                    </div>
+
+                    <AppFooter layoutColorMode={layoutColorMode} />
+                </div>
+
+                <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange} layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+
+                <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+                    <div className="layout-mask p-component-overlay"></div>
+                </CSSTransition>
             </div>
-
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange} layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
-
-            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-                <div className="layout-mask p-component-overlay"></div>
-            </CSSTransition>
-        </div>
+        </Provider>
     );
 };
 
