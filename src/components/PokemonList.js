@@ -13,8 +13,6 @@ export const PokemonList = (props) => {
     /*
     Variables
     */
-    const [quickSearch, setQuickSearch] = useState("");
-    const [lstQuickSearchDataQueried, setLstQuickSearchDataQueried] = useState([]);
     const [selectedPokemon, setSelectedPokemon] = useState(null);
     const [pokemonDialog, setPokemonDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);

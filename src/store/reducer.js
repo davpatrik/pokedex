@@ -3,7 +3,12 @@ ActionTypes
 */
 import * as actions from "./actionTypes";
 
-export default function reducer(state = [], action) {
+const initialState = {
+    lstPokemon: [],
+    selPokemon: {},
+};
+
+export default function reducer(state = initialState, action) {
     switch (action.type) {
         case actions.POKEMON_ADDED_TO_LIST:
             return [
@@ -11,10 +16,11 @@ export default function reducer(state = [], action) {
                 {
                     name: action.payload.name,
                     url: action.payload.url,
+                    pokemon: action.payload.pokemon,
                 },
             ];
         case actions.POKEMON_SELECTED:
-            return state.filter((pokemon) => pokemon.name === action.payload.name);
+            return state.lstPokemon.filter((pokemon) => pokemon.name === action.payload.name)[0];
         default:
             return state;
     }

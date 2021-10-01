@@ -15,7 +15,7 @@ import { PokemonMoves } from "./PokemonMoves";
 import { PokemonStats } from "./PokemonStats";
 import { PokemonAbilities } from "./PokemonAbilities";
 import { PokemonEvolution } from "./PokemonEvolution";
-import { PokemonEvolutionClass } from "./PokemonEvolutionClass";
+import { PokemonEvolutionClass } from "./PokemonEvolution";
 
 export const PokemonDetail = (props) => {
     /*
@@ -30,17 +30,14 @@ export const PokemonDetail = (props) => {
     Init
     */
     useEffect(() => {
-        //console.log("PokemonDetail: ", props.pokemon);
-        //console.log(JSON.stringify(props.pokemon));
-        //<img src={props.pokemon ? props.pokemon.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="100" />
-        queryPokemonSpecies();
+        queryPokemonSpeciesThenEvolution();
         //queryPokemonEvolution();
-    }, [lstEvolutionNames]);
+    }, []);
 
     /*
     Methods
     */
-    const queryPokemonSpecies = () => {
+    const queryPokemonSpeciesThenEvolution = () => {
         PokemonDataService.queryPokemonSpecies(props.pokemon.id).then((response) => {
             //console.log("Species: ", response);
             setPokemonSpecie(response);
@@ -49,19 +46,16 @@ export const PokemonDetail = (props) => {
     };
 
     const queryPokemonEvolution = (url) => {
-        //console.log("url:", url);
         PokemonDataService.queryByUrl(url).then((response) => {
             //console.log("Evolution: ", response);
             setPokemonEvolution(response);
-            extractEvolutionNames(response.chain);
+            //extractEvolutionNames(response.chain);
         });
-        console.log("lstEvolutionNames", lstEvolutionNames.length);
     };
 
     const extractEvolutionNames = async (evolution) => {
         if (evolution.species) {
             let _lstEvolutionNames = lstEvolutionNames;
-            console.log("pushedDet", evolution.species.name);
             _lstEvolutionNames.push(evolution.species.name);
             setLstEvolutionNames(_lstEvolutionNames);
             if (evolution.evolves_to) {
@@ -70,42 +64,12 @@ export const PokemonDetail = (props) => {
                 });
             }
         }
-        console.log("lstEvolutionNamesX", lstEvolutionNames.length);
     };
 
     /*
     Inner Components
      */
     const bioComp = pokemonSpecie && pokemonSpecie.flavor_text_entries.length > 0 ? <p>{pokemonSpecie.flavor_text_entries.filter((val) => val.language.name === "en")[0].flavor_text}</p> : <div />;
-
-    /*
-    const evoCart =
-        lstEvolutionNames.length > 0
-            ? lstEvolutionNames.map((nameX, key) => {
-                  return (
-                      <div className="p-col-12 p-lg-5" key={key}>
-                          <div className="p-grid">{evoComp(nameX)}</div>
-                      </div>
-                  );
-              })
-            : "vacio";
-            */
-
-    const evoComp = (name) => {
-        let pokemonX = props.pokemonMap.get(name);
-        console.log("pokemonX", pokemonX);
-        if (pokemonX) {
-            return (
-                <Card>
-                    <img src={pokemonX && pokemonX.sprites ? pokemonX.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="70" />
-                    <p>{pokemonX.name}</p>
-                    <Button title={pokemonX.name} onClick={() => props.handleSelectPokemon(pokemonX.name)} icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={"Discover " + pokemonX.name} />
-                </Card>
-            );
-        } else {
-            return <></>;
-        }
-    };
 
     /**
      * Return
@@ -147,7 +111,7 @@ export const PokemonDetail = (props) => {
                         </div>
                         <div className="p-col-12 p-md-4">
                             <Panel>
-                                <h4>Evolution + {lstEvolutionNames.length}</h4>
+                                <h4>Evolution</h4>
                                 {pokemonEvolution && pokemonEvolution.chain ? <PokemonEvolutionClass evolution={pokemonEvolution.chain} pokemonMap={props.pokemonMap} handleSelectPokemon={(name) => props.handleSelectPokemon(name)} /> : "vacioDetail"}
                             </Panel>
                         </div>
