@@ -8,15 +8,13 @@ import { AppFooter } from "./AppFooter";
 import { AppMenu } from "./AppMenu";
 import { AppConfig } from "./AppConfig";
 
-import { Dashboard } from "./components/Dashboard";
-//import { Documentation } from "./components/Documentation";
-import { Crud } from "./pages/Crud";
-import { Crud as Crud2 } from "./pages/Crud2";
-import { TimelineDemo } from "./pages/TimelineDemo";
+import { Dashboard } from "./pages/Dashboard";
+import { PokedexPage } from "./pages/PokedexPage";
 import { EmptyPage } from "./pages/EmptyPage";
 
 import PrimeReact from "primereact/api";
 
+// Style files
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
@@ -28,33 +26,19 @@ import "./App.scss";
 /*
 Store
 */
-import store from "./store/store";
-import * as actions from "./store/actions";
-
-store.subscribe(() => {
-    console.log("store changes: ", store.getState());
-});
-
-console.log("app.store");
-console.log(store);
-console.log(store.getState());
-
-let payload = {
-    name: "bulbasaur",
-    url: "https://pokeapi.co/api/v2/pokemon/1/",
-};
-
-store.dispatch(actions.pokemonAddedToList(payload));
-
-console.log(store.getState());
-
-/*
-const App = () => {
-    return <div></div>;
-};
-*/
+import { AuthContext } from "../src/data/AuthContext";
 
 const App = () => {
+    /*
+    Context Api
+    */
+    const [lstPokemon, setLstPokemon] = useState([]);
+    const [lstPokemonMap, setLstPokemonData] = useState(new Map());
+    const [selPokemon, setSelPokemon] = useState({});
+
+    /*
+    Layout vars
+    */
     const [layoutMode, setLayoutMode] = useState("static");
     const [layoutColorMode, setLayoutColorMode] = useState("light");
     const [inputStyle, setInputStyle] = useState("outlined");
@@ -158,24 +142,9 @@ const App = () => {
 
     const menu = [
         {
-            label: "Home",
-            items: [
-                {
-                    label: "Dashboard",
-                    icon: "pi pi-fw pi-home",
-                    to: "/",
-                },
-            ],
-        },
-
-        {
             label: "Pages",
             icon: "pi pi-fw pi-clone",
-            items: [
-                { label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/crud" },
-                { label: "Crud", icon: "pi pi-fw pi-user-edit", to: "/crud2" },
-                { label: "Timeline", icon: "pi pi-fw pi-calendar", to: "/timeline" },
-            ],
+            items: [{ label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" }],
         },
         {
             label: "Get Started",
@@ -184,14 +153,14 @@ const App = () => {
                     label: "Documentation",
                     icon: "pi pi-fw pi-question",
                     command: () => {
-                        window.location = "#/documentation";
+                        window.location = "https://gitlab.com/davpatrik/pokedex/-/blob/main/README.md";
                     },
                 },
                 {
                     label: "View Source",
                     icon: "pi pi-fw pi-search",
                     command: () => {
-                        window.location = "https://github.com/primefaces/sakai-react";
+                        window.location = "https://gitlab.com/davpatrik/pokedex.git";
                     },
                 },
             ],
@@ -219,32 +188,88 @@ const App = () => {
         "layout-theme-light": layoutColorMode === "light",
     });
 
+    /*
+    Context Api methods
+    */
+    function updatePokemonInList(payload) {
+        if (lstPokemon) {
+            const newList = lstPokemon.map((pokemonX) => {
+                if (pokemonX.name === payload.name) {
+                    const updatedPokemon = {
+                        ...pokemonX,
+                        //isComplete: !pokemonX.isComplete,
+                        ...payload,
+                    };
+                    return updatedPokemon;
+                }
+                return pokemonX;
+            });
+            setLstPokemon(newList);
+        }
+    }
+
+    function getPokemonByName(name) {
+        if (lstPokemon) {
+            let _pokemonFiltered = lstPokemon.filter((pokemonX) => pokemonX.name === name)[0];
+            if (_pokemonFiltered) {
+                return _pokemonFiltered;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    function getPokemonByNameFromMap(name) {
+        if (lstPokemonMap && lstPokemonMap.has(name)) {
+            return lstPokemonMap.get(name);
+        } else {
+            return null;
+        }
+    }
+
+    function putPokemonByNameInMap(name, payload) {
+        if (!lstPokemonMap.has(name)) {
+            lstPokemonMap.set(name, payload);
+        }
+    }
+
     return (
-        <div className={wrapperClass} onClick={onWrapperClick}>
-            <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
+        <AuthContext.Provider
+            value={{
+                lstPokemon: lstPokemon,
+                setLstPokemon: setLstPokemon,
+                selPokemon: selPokemon,
+                setSelPokemon: setSelPokemon,
+                updatePokemonInList: updatePokemonInList,
+                getPokemonByName: getPokemonByName,
+                getPokemonByNameFromMap: getPokemonByNameFromMap,
+                putPokemonByNameInMap: putPokemonByNameInMap,
+            }}
+        >
+            <div className={wrapperClass} onClick={onWrapperClick}>
+                <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
-            <div className="layout-sidebar" onClick={onSidebarClick}>
-                <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
-            </div>
-
-            <div className="layout-main-container">
-                <div className="layout-main">
-                    <Route path="/" exact component={Dashboard} />
-                    <Route path="/timeline" component={TimelineDemo} />
-                    <Route path="/crud" component={Crud} />
-                    <Route path="/crud2" component={Crud2} />
-                    <Route path="/empty" component={EmptyPage} />
+                <div className="layout-sidebar" onClick={onSidebarClick}>
+                    <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
                 </div>
 
-                <AppFooter layoutColorMode={layoutColorMode} />
+                <div className="layout-main-container">
+                    <div className="layout-main">
+                        <Route path="/" exact component={Dashboard} />
+                        <Route path="/pokedexPage" component={PokedexPage} />
+                        <Route path="/empty" component={EmptyPage} />
+                    </div>
+
+                    <AppFooter layoutColorMode={layoutColorMode} />
+                </div>
+
+                <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
+                    <div className="layout-mask p-component-overlay"></div>
+                </CSSTransition>
             </div>
-
-            <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange} layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
-
-            <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
-                <div className="layout-mask p-component-overlay"></div>
-            </CSSTransition>
-        </div>
+        </AuthContext.Provider>
     );
 };
 

@@ -80,7 +80,7 @@ export const PokemonStats = (props) => {
         <div className="p-grid p-fluid">
             {props.pokemon && props.pokemon.stats ? (
                 <div className="card p-d-flex p-jc-center">
-                    <Chart type="radar" data={chartData} options={lightOptions} style={{ position: "relative", width: "50%" }} />
+                    <Chart type="radar" data={chartData} options={lightOptions} style={{ position: "relative", width: "70%" }} />
                 </div>
             ) : (
                 ""

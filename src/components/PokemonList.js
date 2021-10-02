@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 // Import prime components
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -9,17 +9,18 @@ import { InputText } from "primereact/inputtext";
 import PokemonDataService from "../service/PokemonDataService";
 import { PokemonDetail } from "./PokemonDetail";
 
+/*
+Store
+*/
+import { AuthContext } from "../data/AuthContext";
+
 export const PokemonList = (props) => {
     /*
     Variables
     */
-    const [quickSearch, setQuickSearch] = useState("");
-    const [lstQuickSearchDataQueried, setLstQuickSearchDataQueried] = useState([]);
-    const [selectedPokemon, setSelectedPokemon] = useState(null);
     const [pokemonDialog, setPokemonDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const dt = useRef(null);
-    const pokemonMap = new Map();
 
     /* 
     Init
@@ -27,26 +28,29 @@ export const PokemonList = (props) => {
     useEffect(() => {}, []);
 
     /*
+    Context  
+    */
+    const context = useContext(AuthContext);
+
+    /*
     Methods
     */
     const fillPokemonMap = (name) => {
-        if (!pokemonMap.has(name)) {
+        let _pokemonFromContext = context.getPokemonByNameFromMap(name);
+        if (!_pokemonFromContext) {
             PokemonDataService.queryPokemonData(name).then((response) => {
-                //console.log("queryPokemonData", response);
-                pokemonMap.set(name, response);
+                context.putPokemonByNameInMap(name, response);
                 return response;
             });
         } else {
-            return pokemonMap.get(name);
+            return _pokemonFromContext;
         }
     };
 
     const selectPokemon = async (name) => {
-        //console.log("selectPokemon:", name);
-        setPokemonDialog(false);
-        let pokemon = await pokemonMap.get(name);
-        //console.log("pokemonFromMap", pokemon);
-        setSelectedPokemon(pokemon);
+        await setPokemonDialog(false);
+        let pokemon = context.getPokemonByNameFromMap(name);
+        await context.setSelPokemon(pokemon);
         setPokemonDialog(true);
     };
 
@@ -55,23 +59,11 @@ export const PokemonList = (props) => {
     };
 
     /*
-    Table Columns
-    */
-    const columnsForLstPokemon = [
-        { field: "name.name", header: "Producto" },
-        { field: "supplierObj.businessName", header: "Proveedor" },
-        { field: "cost", header: "Costo" },
-    ];
-    const dynamicColumnsForLstPokemon = columnsForLstPokemon.map((col) => {
-        return <Column key={col.field} field={col.field} header={col.header} />;
-    });
-
-    /*
     Table header & filter
     */
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Select your Pokemon</h5>
+            <h5 className="m-0">Select your Pokémon</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
                 <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
@@ -92,31 +84,15 @@ export const PokemonList = (props) => {
     };
 
     const imageBodyTemplate = (rowData) => {
-        let pokemon = fillPokemonMap(rowData.name);
-        //console.log("pokemon: ", pokemon);
+        fillPokemonMap(rowData.name);
+        let strAux = "pokemon/";
+        let idFromList = rowData.url.substring(rowData.url.lastIndexOf(strAux) + strAux.length, rowData.url.length - 1);
         return (
             <>
                 <span className="p-column-title">Image</span>
-                <img src={pokemon && pokemon.sprites ? pokemon.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="70" />
+                <img src={require("./pokemons/" + idFromList + ".png")} className="shadow-2" width="70" />
             </>
         );
-    };
-
-    const imageBodyTemplate2 = (rowData) => {
-        //let pokemon = fillPokemonMap(rowData.name);
-        //let pokemon = pokemonMap.get(rowData.name);
-        let pokemon = new Promise((resolve, reject) => {
-            resolve(fillPokemonMap(rowData.name));
-        });
-        pokemon.then((poke) => {
-            //console.log("pokemon: ", poke);
-            return (
-                <>
-                    <span className="p-column-title">Image</span>
-                    <img src={poke && poke.sprites ? poke.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="100" />
-                </>
-            );
-        });
     };
 
     const actionBodyTemplate = (rowData) => {
@@ -134,9 +110,7 @@ export const PokemonList = (props) => {
         <div className="p-grid p-fluid">
             <DataTable
                 ref={dt}
-                value={props.lstPokemon}
-                //selection={selectedProducts}
-                //onSelectionChange={(e) => setSelectedProducts(e.value)}
+                value={context.lstPokemon}
                 dataKey="name"
                 paginator
                 rows={5}
@@ -153,7 +127,7 @@ export const PokemonList = (props) => {
                 <Column header="Discover" body={actionBodyTemplate}></Column>
             </DataTable>
 
-            {pokemonDialog && selectedPokemon ? <PokemonDetail pokemon={selectedPokemon} hideDetail={() => hideDetail()} handleSelectPokemon={(name) => selectPokemon(name)} pokemonMap={pokemonMap} /> : ""}
+            {pokemonDialog && context.selPokemon ? <PokemonDetail pokemon={context.selPokemon} hideDetail={() => hideDetail()} handleSelectPokemon={(name) => selectPokemon(name)} /> : ""}
         </div>
     );
 };

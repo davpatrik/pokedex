@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
 // Import prime components
-import { Button } from "primereact/button";
-import { Slider } from "primereact/slider";
 import { ProgressBar } from "primereact/progressbar";
 
 // Import Services
 import PokemonDataService from "../service/PokemonDataService";
-
-// Import Utils
-import { typeColorsMapping } from "../util/PokemonTypeColor";
 
 export const PokemonMoves = (props) => {
     /*
@@ -42,10 +37,6 @@ export const PokemonMoves = (props) => {
             setLstMoves(_lstMoves);
         }
     };
-
-    /*
-    Inner Components
-     */
 
     /**
      * Return
