@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from "react";
-// Import prime components
-import { Button } from "primereact/button";
-import { Slider } from "primereact/slider";
 
 // Import Services
 import PokemonDataService from "../service/PokemonDataService";
-
-// Import Utils
-import { typeColorsMapping } from "../util/PokemonTypeColor";
 
 export const PokemonAbilities = (props) => {
     /*
@@ -19,7 +13,6 @@ export const PokemonAbilities = (props) => {
     Init
     */
     useEffect(() => {
-        //console.log("PokemonAbilities: ", props.pokemon.abilities);
         queryPokemonAbilities();
     }, []);
 
@@ -35,13 +28,8 @@ export const PokemonAbilities = (props) => {
                 });
             });
             setLstAbilities(_lstAbilities);
-            //console.log("lstAbilities: ", _lstAbilities);
         }
     };
-
-    /*
-    Inner Components
-     */
 
     /**
      * Return

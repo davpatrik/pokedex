@@ -1,14 +1,16 @@
 import React, { Component } from "react";
 // Import prime components
 import { Button } from "primereact/button";
-import { Column } from "primereact/column";
-import { Slider } from "primereact/slider";
 
 // Import Services
-import PokemonDataService from "../service/PokemonDataService";
 import { Card } from "primereact/card";
 
-export class PokemonEvolutionClass extends Component {
+/*
+Store
+*/
+import { AuthContext } from "../data/AuthContext";
+
+export class PokemonEvolution extends Component {
     /*
     Variables
     */
@@ -24,8 +26,6 @@ export class PokemonEvolutionClass extends Component {
     */
     componentDidMount() {
         this.loadEvolutionData();
-        //this.props.pokemonMap.set("xx", "XxX");
-        console.log("mapP2: ", this.props.pokemonMap);
     }
 
     /*
@@ -54,13 +54,13 @@ export class PokemonEvolutionClass extends Component {
         Inner Components
         */
         const evoComp = (name) => {
-            let pokemonX = this.props.pokemonMap.get(name);
+            let pokemonX = this.context.getPokemonByNameFromMap(name);
             if (pokemonX) {
                 return (
                     <Card>
                         <img src={pokemonX && pokemonX.sprites ? pokemonX.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="70" />
                         <p>{pokemonX.name}</p>
-                        <Button title={pokemonX.name} onClick={() => this.props.handleSelectPokemon(pokemonX.name)} icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={"Discover " + pokemonX.name} />
+                        <Button title={pokemonX.name} disabled={pokemonX.name === this.props.parentPokemonName} onClick={() => this.props.handleSelectPokemon(pokemonX.name)} icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={"Discover " + pokemonX.name} />
                     </Card>
                 );
             } else {
@@ -72,7 +72,7 @@ export class PokemonEvolutionClass extends Component {
          * Return
          */
         return (
-            <div>
+            <div className="p-col-12 p-lg-12">
                 {this.props.evolution
                     ? this.state.lstEvolutionNames.map((nameX, key) => {
                           return (
@@ -86,3 +86,8 @@ export class PokemonEvolutionClass extends Component {
         );
     }
 }
+
+/*
+Context  
+*/
+PokemonEvolution.contextType = AuthContext;

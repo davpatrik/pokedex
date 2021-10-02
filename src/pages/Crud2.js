@@ -17,7 +17,6 @@ import { ProductService } from "../service/ProductService";
 /*
 Store
 */
-import store from "../store/store";
 
 /*
 Services

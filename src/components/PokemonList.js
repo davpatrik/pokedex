@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 // Import prime components
 import { Button } from "primereact/button";
 import { Column } from "primereact/column";
@@ -12,18 +12,15 @@ import { PokemonDetail } from "./PokemonDetail";
 /*
 Store
 */
-import { connect } from "react-redux";
-import * as actions from "../store/actions";
+import { AuthContext } from "../data/AuthContext";
 
 export const PokemonList = (props) => {
     /*
     Variables
     */
-    const [selectedPokemon, setSelectedPokemon] = useState(null);
     const [pokemonDialog, setPokemonDialog] = useState(false);
     const [globalFilter, setGlobalFilter] = useState(null);
     const dt = useRef(null);
-    const pokemonMap = new Map();
 
     /* 
     Init
@@ -31,44 +28,35 @@ export const PokemonList = (props) => {
     useEffect(() => {}, []);
 
     /*
+    Context  
+    */
+    const context = useContext(AuthContext);
+
+    /*
     Methods
     */
     const fillPokemonMap = (name) => {
-        if (!pokemonMap.has(name)) {
+        let _pokemonFromContext = context.getPokemonByNameFromMap(name);
+        if (!_pokemonFromContext) {
             PokemonDataService.queryPokemonData(name).then((response) => {
-                //console.log("queryPokemonData", response);
-                pokemonMap.set(name, response);
+                context.putPokemonByNameInMap(name, response);
                 return response;
             });
         } else {
-            return pokemonMap.get(name);
+            return _pokemonFromContext;
         }
     };
 
     const selectPokemon = async (name) => {
-        //console.log("selectPokemon:", name);
-        setPokemonDialog(false);
-        let pokemon = await pokemonMap.get(name);
-        //console.log("pokemonFromMap", pokemon);
-        setSelectedPokemon(pokemon);
+        await setPokemonDialog(false);
+        let pokemon = context.getPokemonByNameFromMap(name);
+        await context.setSelPokemon(pokemon);
         setPokemonDialog(true);
     };
 
     const hideDetail = () => {
         setPokemonDialog(false);
     };
-
-    /*
-    Table Columns
-    */
-    const columnsForLstPokemon = [
-        { field: "name.name", header: "Producto" },
-        { field: "supplierObj.businessName", header: "Proveedor" },
-        { field: "cost", header: "Costo" },
-    ];
-    const dynamicColumnsForLstPokemon = columnsForLstPokemon.map((col) => {
-        return <Column key={col.field} field={col.field} header={col.header} />;
-    });
 
     /*
     Table header & filter
@@ -96,12 +84,13 @@ export const PokemonList = (props) => {
     };
 
     const imageBodyTemplate = (rowData) => {
-        let pokemon = fillPokemonMap(rowData.name);
-        //console.log("pokemon: ", pokemon);
+        fillPokemonMap(rowData.name);
+        let strAux = "pokemon/";
+        let idFromList = rowData.url.substring(rowData.url.lastIndexOf(strAux) + strAux.length, rowData.url.length - 1);
         return (
             <>
                 <span className="p-column-title">Image</span>
-                <img src={pokemon && pokemon.sprites ? pokemon.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="70" />
+                <img src={require("./pokemons/" + idFromList + ".png")} className="shadow-2" width="70" />
             </>
         );
     };
@@ -121,9 +110,7 @@ export const PokemonList = (props) => {
         <div className="p-grid p-fluid">
             <DataTable
                 ref={dt}
-                value={props.lstPokemon}
-                //selection={selectedProducts}
-                //onSelectionChange={(e) => setSelectedProducts(e.value)}
+                value={context.lstPokemon}
                 dataKey="name"
                 paginator
                 rows={5}
@@ -140,26 +127,7 @@ export const PokemonList = (props) => {
                 <Column header="Discover" body={actionBodyTemplate}></Column>
             </DataTable>
 
-            {pokemonDialog && selectedPokemon ? <PokemonDetail pokemon={selectedPokemon} hideDetail={() => hideDetail()} handleSelectPokemon={(name) => selectPokemon(name)} pokemonMap={pokemonMap} /> : ""}
+            {pokemonDialog && context.selPokemon ? <PokemonDetail pokemon={context.selPokemon} hideDetail={() => hideDetail()} handleSelectPokemon={(name) => selectPokemon(name)} /> : ""}
         </div>
     );
 };
-
-/*
-Map state and dispatch
-*/
-const mapStateToProps = (state) => {
-    return {
-        lstPokemon: state.lstPokemon,
-        selPokemon: state.selPokemon,
-    };
-};
-
-const mapDispatchToProps = (dispatch) => {
-    return {
-        pokemonAddedToList: (payload) => dispatch(actions.pokemonAddedToList(payload)),
-        pokemonSelected: (payload) => dispatch(actions.pokemonSelected(payload)),
-    };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps);

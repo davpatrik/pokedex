@@ -10,8 +10,7 @@ import { AppConfig } from "./AppConfig";
 
 import { Dashboard } from "./components/Dashboard";
 //import { Documentation } from "./components/Documentation";
-import { Crud } from "./pages/Crud";
-import { Crud as Crud2 } from "./pages/Crud2";
+import { PokedexPage } from "./pages/PokedexPage";
 import { TimelineDemo } from "./pages/TimelineDemo";
 import { EmptyPage } from "./pages/EmptyPage";
 
@@ -28,17 +27,19 @@ import "./App.scss";
 /*
 Store
 */
-//import store from "./store/store";
-import * as actions from "./store/actions";
-import { createStore, applyMiddleware } from "redux";
-import { Provider } from "react-redux";
-import reduxThunk from "redux-thunk";
-import reducer from "./store/reducer";
-
-//const store = createStore(reducer, applyMiddleware(reduxThunk));
-const store = createStore(reducer);
+import { AuthContext } from "../src/data/AuthContext";
 
 const App = () => {
+    /*
+    Context Api
+    */
+    const [lstPokemon, setLstPokemon] = useState([]);
+    const [lstPokemonMap, setLstPokemonData] = useState(new Map());
+    const [selPokemon, setSelPokemon] = useState({});
+
+    /*
+    Layout vars
+    */
     const [layoutMode, setLayoutMode] = useState("static");
     const [layoutColorMode, setLayoutColorMode] = useState("light");
     const [inputStyle, setInputStyle] = useState("outlined");
@@ -156,8 +157,7 @@ const App = () => {
             label: "Pages",
             icon: "pi pi-fw pi-clone",
             items: [
-                { label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/crud" },
-                { label: "Crud", icon: "pi pi-fw pi-user-edit", to: "/crud2" },
+                { label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" },
                 { label: "Timeline", icon: "pi pi-fw pi-calendar", to: "/timeline" },
             ],
         },
@@ -203,8 +203,66 @@ const App = () => {
         "layout-theme-light": layoutColorMode === "light",
     });
 
+    /*
+    Context Api methods
+    */
+    function updatePokemonInList(payload) {
+        if (lstPokemon) {
+            const newList = lstPokemon.map((pokemonX) => {
+                if (pokemonX.name === payload.name) {
+                    const updatedPokemon = {
+                        ...pokemonX,
+                        //isComplete: !pokemonX.isComplete,
+                        ...payload,
+                    };
+                    return updatedPokemon;
+                }
+                return pokemonX;
+            });
+            setLstPokemon(newList);
+        }
+    }
+
+    function getPokemonByName(name) {
+        if (lstPokemon) {
+            let _pokemonFiltered = lstPokemon.filter((pokemonX) => pokemonX.name === name)[0];
+            if (_pokemonFiltered) {
+                return _pokemonFiltered;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
+    function getPokemonByNameFromMap(name) {
+        if (lstPokemonMap && lstPokemonMap.has(name)) {
+            return lstPokemonMap.get(name);
+        } else {
+            return null;
+        }
+    }
+
+    function putPokemonByNameInMap(name, payload) {
+        if (!lstPokemonMap.has(name)) {
+            lstPokemonMap.set(name, payload);
+        }
+    }
+
     return (
-        <Provider store={store}>
+        <AuthContext.Provider
+            value={{
+                lstPokemon: lstPokemon,
+                setLstPokemon: setLstPokemon,
+                selPokemon: selPokemon,
+                setSelPokemon: setSelPokemon,
+                updatePokemonInList: updatePokemonInList,
+                getPokemonByName: getPokemonByName,
+                getPokemonByNameFromMap: getPokemonByNameFromMap,
+                putPokemonByNameInMap: putPokemonByNameInMap,
+            }}
+        >
             <div className={wrapperClass} onClick={onWrapperClick}>
                 <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
@@ -216,8 +274,7 @@ const App = () => {
                     <div className="layout-main">
                         <Route path="/" exact component={Dashboard} />
                         <Route path="/timeline" component={TimelineDemo} />
-                        <Route path="/crud" component={Crud} />
-                        <Route path="/crud2" component={Crud2} />
+                        <Route path="/pokedexPage" component={PokedexPage} />
                         <Route path="/empty" component={EmptyPage} />
                     </div>
 
@@ -230,7 +287,7 @@ const App = () => {
                     <div className="layout-mask p-component-overlay"></div>
                 </CSSTransition>
             </div>
-        </Provider>
+        </AuthContext.Provider>
     );
 };
 
