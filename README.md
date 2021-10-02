@@ -4,16 +4,11 @@ Below you will find some information about how to download, build and run this p
 
 ## Table of Contents
 
--   [CI/CD](#CI/CD)
 -   [Pre requirements](#pre-requirements)
 -   [Download from GitLab](#dounloading-from-gitLab-repo)
 -   [Installing modules](#installing-modules)
 -   [Running the project](#running-the-project)
-
-## CI/CD
-
-This project is also configured to execute CI/CD with DigitalOcean Apps platform.<br>
-When merged changes into "develop" branch, this will trigger CI/CD process, and you can access directly this link [Cloud Link](https://pokedex.ondigitalocean.app/) to view the project in action!
+-   [CI/CD](#CI/CD)
 
 ## Pre requirements
 
@@ -49,3 +44,8 @@ This runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 I hope you enjoy discovering Pokémons!
+
+## CI/CD
+
+This project is also configured to execute CI/CD with Gitlab + DigitalOcean Apps Platform.<br>
+When merged changes into "develop" branch, this will trigger CI/CD process, and you can access directly this link [Cloud Link](https://pokedex.ondigitalocean.app/) to view the project in action!
