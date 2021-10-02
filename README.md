@@ -4,10 +4,16 @@ Below you will find some information about how to download, build and run this p
 
 ## Table of Contents
 
+-   [CI/CD](#CI/CD)
 -   [Pre requirements](#pre-requirements)
 -   [Download from GitLab](#dounloading-from-gitLab-repo)
 -   [Installing modules](#installing-modules)
 -   [Running the project](#running-the-project)
+
+## CI/CD
+
+This project is also configured to execute CI/CD with DigitalOcean Apps platform.<br>
+When merged changes into "develop" branch, this will trigger CI/CD process, and you can access directly this link [Cloud Link](https://pokedex.ondigitalocean.app/) to view the project in action!
 
 ## Pre requirements
 
