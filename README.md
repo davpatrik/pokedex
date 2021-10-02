@@ -15,7 +15,7 @@ In order to run successfully this project, install the following software:
 
 [Node](https://nodejs.org/es/download/).
 
-## Dounloading from gitLab repo
+## Downloading from GitLab repo
 
 Please execute the following command in order to download the project from GitLab repo:
 
