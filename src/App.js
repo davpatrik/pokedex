@@ -8,14 +8,13 @@ import { AppFooter } from "./AppFooter";
 import { AppMenu } from "./AppMenu";
 import { AppConfig } from "./AppConfig";
 
-import { Dashboard } from "./components/Dashboard";
-//import { Documentation } from "./components/Documentation";
+import { Dashboard } from "./pages/Dashboard";
 import { PokedexPage } from "./pages/PokedexPage";
-import { TimelineDemo } from "./pages/TimelineDemo";
 import { EmptyPage } from "./pages/EmptyPage";
 
 import PrimeReact from "primereact/api";
 
+// Style files
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
@@ -143,23 +142,9 @@ const App = () => {
 
     const menu = [
         {
-            label: "Home",
-            items: [
-                {
-                    label: "Dashboard",
-                    icon: "pi pi-fw pi-home",
-                    to: "/",
-                },
-            ],
-        },
-
-        {
             label: "Pages",
             icon: "pi pi-fw pi-clone",
-            items: [
-                { label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" },
-                { label: "Timeline", icon: "pi pi-fw pi-calendar", to: "/timeline" },
-            ],
+            items: [{ label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" }],
         },
         {
             label: "Get Started",
@@ -168,14 +153,14 @@ const App = () => {
                     label: "Documentation",
                     icon: "pi pi-fw pi-question",
                     command: () => {
-                        window.location = "#/documentation";
+                        window.location = "https://gitlab.com/davpatrik/pokedex/-/blob/main/README.md";
                     },
                 },
                 {
                     label: "View Source",
                     icon: "pi pi-fw pi-search",
                     command: () => {
-                        window.location = "https://github.com/primefaces/sakai-react";
+                        window.location = "https://gitlab.com/davpatrik/pokedex.git";
                     },
                 },
             ],
@@ -273,15 +258,12 @@ const App = () => {
                 <div className="layout-main-container">
                     <div className="layout-main">
                         <Route path="/" exact component={Dashboard} />
-                        <Route path="/timeline" component={TimelineDemo} />
                         <Route path="/pokedexPage" component={PokedexPage} />
                         <Route path="/empty" component={EmptyPage} />
                     </div>
 
                     <AppFooter layoutColorMode={layoutColorMode} />
                 </div>
-
-                <AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange} layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
 
                 <CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
                     <div className="layout-mask p-component-overlay"></div>

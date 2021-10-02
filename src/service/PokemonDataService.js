@@ -1,21 +1,21 @@
-import GeneralServiceNot from "./GeneralServiceNot";
+import GeneralService from "./GeneralService";
 
 export class PokemonDataService {
     //async function loginUser(payload) {
     list(urlParams) {
-        return GeneralServiceNot.asyncGetService("pokemon" + (urlParams ? urlParams : ""));
+        return GeneralService.asyncGetService("pokemon" + (urlParams ? urlParams : ""));
     }
 
     queryPokemonData(name) {
-        return GeneralServiceNot.asyncGetService("pokemon/" + name + "/");
+        return GeneralService.asyncGetService("pokemon/" + name + "/");
     }
 
     queryPokemonSpecies(id) {
-        return GeneralServiceNot.asyncGetService("pokemon-species/" + id + "/");
+        return GeneralService.asyncGetService("pokemon-species/" + id + "/");
     }
 
     queryByUrl(url) {
-        return GeneralServiceNot.asyncGetServiceByUrl(url);
+        return GeneralService.asyncGetServiceByUrl(url);
     }
 }
 

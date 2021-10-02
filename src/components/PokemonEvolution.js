@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 // Import prime components
 import { Button } from "primereact/button";
+import { Card } from "primereact/card";
 
 // Import Services
-import { Card } from "primereact/card";
+import PokemonDataService from "../service/PokemonDataService";
 
 /*
 Store
@@ -39,6 +40,7 @@ export class PokemonEvolution extends Component {
         if (evolution.species) {
             let _lstEvolutionNames = this.state.lstEvolutionNames;
             _lstEvolutionNames.push(evolution.species.name);
+            await this.fillPokemonMap(evolution.species.name);
             //setLstEvolutionNames(_lstEvolutionNames);
             this.setState({ lstEvolutionNames: _lstEvolutionNames });
             if (evolution.evolves_to) {
@@ -46,6 +48,18 @@ export class PokemonEvolution extends Component {
                     this.extractEvolutionNames(evoX);
                 });
             }
+        }
+    }
+
+    async fillPokemonMap(name) {
+        let _pokemonFromContext = this.context.getPokemonByNameFromMap(name);
+        if (!_pokemonFromContext) {
+            await PokemonDataService.queryPokemonData(name).then((response) => {
+                this.context.putPokemonByNameInMap(name, response);
+                return response;
+            });
+        } else {
+            return _pokemonFromContext;
         }
     }
 
@@ -72,7 +86,7 @@ export class PokemonEvolution extends Component {
          * Return
          */
         return (
-            <div className="p-col-12 p-lg-12">
+            <div className="p-col-12 p-lg-5">
                 {this.props.evolution
                     ? this.state.lstEvolutionNames.map((nameX, key) => {
                           return (

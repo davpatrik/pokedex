@@ -71,8 +71,8 @@ export const PokemonDetail = (props) => {
      * Return
      */
     return (
-        <Dialog header={props.pokemon.name} visible={props && props.pokemon} onHide={() => props.hideDetail()} style={{ width: "90vw" }} modal={true}>
-            <div className="p-col-12 p-lg-12">
+        <Dialog header={props.pokemon.name} visible={props && props.pokemon} onHide={() => props.hideDetail()} style={{ width: "90vw", display: "flex", justifyContent: "center" }} modal={true}>
+            <div className="p-col-12 p-lg-12" style={{ alignItems: "center" }}>
                 <div className="p-grid">
                     <div className="p-col-12 p-md-4">
                         <Panel>
@@ -109,7 +109,7 @@ export const PokemonDetail = (props) => {
                         </Panel>
                     </div>
                     <div className="p-col-12 p-md-4">
-                        <Panel>
+                        <Panel style={{ alignItems: "center" }}>
                             <h4>Evolution</h4>
                             {pokemonEvolution && pokemonEvolution.chain ? <PokemonEvolution evolution={pokemonEvolution.chain} handleSelectPokemon={(name) => props.handleSelectPokemon(name)} parentPokemonName={props.pokemon.name} /> : "Empty.."}
                         </Panel>

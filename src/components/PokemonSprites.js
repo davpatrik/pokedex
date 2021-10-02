@@ -127,7 +127,7 @@ export const PokemonSprites = (props) => {
                                             setLstSprites(_lstUpdated);
                                             toast.current.show({ severity: "success", summary: "Successful", detail: "Marked as your favourite!", life: 3000 });
                                         } else {
-                                            toast.current.show({ severity: "success", summary: "Successful", detail: "This is your favourite already!", life: 3000 });
+                                            toast.current.show({ severity: "success", summary: "Successful", detail: "This is your favourite already :)", life: 3000 });
                                         }
                                     }}
                                 />
