@@ -41,7 +41,7 @@ export const LanguageSelector = (props) => {
                         </div>
                     </>
                 ) : (
-                    ""
+                    <img src={"assets/layout/images/unknowPokemon.png"} alt={""} style={{ width: "120px" }} />
                 )}
             </div>
         </div>
