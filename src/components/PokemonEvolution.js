@@ -72,7 +72,7 @@ export class PokemonEvolution extends Component {
             if (pokemonX) {
                 return (
                     <Card>
-                        <img src={pokemonX && pokemonX.sprites ? pokemonX.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="70" />
+                        <img src={pokemonX && pokemonX.sprites ? pokemonX.sprites.front_default : null} alt={"assets/layout/images/unknowPokemon.png"} className="shadow-2" width="110" />
                         <p>{pokemonX.name}</p>
                         <Button title={pokemonX.name} disabled={pokemonX.name === this.props.parentPokemonName} onClick={() => this.props.handleSelectPokemon(pokemonX.name)} icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={"Discover " + pokemonX.name} />
                     </Card>

@@ -1,10 +1,16 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 // Import prime components
 import { Button } from "primereact/button";
 import { Carousel } from "primereact/carousel";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
+import { label } from "../util/Internationalization";
+
+/*
+Store
+*/
+import { AuthContext } from "../data/AuthContext";
 
 export const PokemonSprites = (props) => {
     /*
@@ -22,6 +28,11 @@ export const PokemonSprites = (props) => {
     useEffect(() => {
         fillSprites();
     }, []);
+
+    /*
+    Context  
+    */
+    const context = useContext(AuthContext);
 
     /*
     Methods
@@ -125,9 +136,9 @@ export const PokemonSprites = (props) => {
                                                 return updatedSprite;
                                             });
                                             setLstSprites(_lstUpdated);
-                                            toast.current.show({ severity: "success", summary: "Successful", detail: "Marked as your favourite!", life: 3000 });
+                                            toast.current.show({ severity: "success", summary: label[context.selLanguage]["successful"], detail: label[context.selLanguage]["maskedAsFavourirte"], life: 3000 });
                                         } else {
-                                            toast.current.show({ severity: "success", summary: "Successful", detail: "This is your favourite already :)", life: 3000 });
+                                            toast.current.show({ severity: "success", summary: label[context.selLanguage]["successful"], detail: label[context.selLanguage]["favourirteAlready"], life: 3000 });
                                         }
                                     }}
                                 />
@@ -164,7 +175,7 @@ export const PokemonSprites = (props) => {
      * Return
      */
     return (
-        <Dialog header={props.pokemon.name + " sprites detail"} visible={lstSprites.length > 0} onHide={() => props.onHide()}>
+        <Dialog header={props.pokemon.name + " sprites"} visible={lstSprites.length > 0} onHide={() => props.onHide()} style={{ textAlign: "center", paddingTop: "1rem", width: "100%" }}>
             <div className="carousel-demo">
                 <Toast ref={toast} />
                 <div className="card">
@@ -181,7 +192,7 @@ export const PokemonSprites = (props) => {
                     rejectLabel="No"
                     baseZIndex={1000}
                 />
-                <Dialog header={selSprite.description} visible={boViewFullPageDialogVisible} onHide={() => setBoViewFullPageDialogVisible(false)} breakpoints={{ "1960px": "75vw" }} style={{ width: "80vw" }} baseZIndex={1000}>
+                <Dialog header={selSprite.description} visible={boViewFullPageDialogVisible} onHide={() => setBoViewFullPageDialogVisible(false)} breakpoints={{ "1960px": "75vw" }} style={{ width: "80vw", textAlign: "center" }} baseZIndex={1000}>
                     <img src={selSprite.image} alt={null} style={{ width: props.width ? props.width : 620, height: props.height ? props.height : 480 }} className="product-image" />
                 </Dialog>
             </div>
