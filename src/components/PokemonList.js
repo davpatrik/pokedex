@@ -8,6 +8,8 @@ import { InputText } from "primereact/inputtext";
 // Import Services
 import PokemonDataService from "../service/PokemonDataService";
 import { PokemonDetail } from "./PokemonDetail";
+// Import Utils
+import { label } from "../util/Internationalization";
 
 /*
 Store
@@ -63,10 +65,10 @@ export const PokemonList = (props) => {
     */
     const header = (
         <div className="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
-            <h5 className="m-0">Select your Pokémon</h5>
+            <h5 className="m-0">{label[context.selLanguage]["selectPokemon"]}</h5>
             <span className="block mt-2 md:mt-0 p-input-icon-left">
                 <i className="pi pi-search" />
-                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder="Search..." />
+                <InputText type="search" onInput={(e) => setGlobalFilter(e.target.value)} placeholder={label[context.selLanguage]["quickSeaarch"]} />
             </span>
         </div>
     );
@@ -77,7 +79,7 @@ export const PokemonList = (props) => {
     const nameBodyTemplate = (rowData) => {
         return (
             <>
-                <span className="p-column-title">Name</span>
+                <span className="p-column-title">{label[context.selLanguage]["name"]}</span>
                 {rowData.name}
             </>
         );
@@ -89,7 +91,7 @@ export const PokemonList = (props) => {
         let idFromList = rowData.url.substring(rowData.url.lastIndexOf(strAux) + strAux.length, rowData.url.length - 1);
         return (
             <>
-                <span className="p-column-title">Image</span>
+                <span className="p-column-title">{label[context.selLanguage]["image"]}</span>
                 <img src={require("./pokemons/" + idFromList + ".png")} className="shadow-2" width="70" />
             </>
         );
@@ -98,7 +100,7 @@ export const PokemonList = (props) => {
     const actionBodyTemplate = (rowData) => {
         return (
             <div className="actions">
-                <Button icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={"Discover " + rowData.name} onClick={() => selectPokemon(rowData.name)} />
+                <Button icon="pi pi-search" className="p-button-rounded p-button-success mr-2" title={label[context.selLanguage]["discover"] + " " + rowData.name} onClick={() => selectPokemon(rowData.name)} />
             </div>
         );
     };
@@ -122,9 +124,9 @@ export const PokemonList = (props) => {
                 emptyMessage="Loding Pokémons.."
                 header={header}
             >
-                <Column field="name" header="Pokémon" sortable body={nameBodyTemplate}></Column>
-                <Column header="Image" body={imageBodyTemplate}></Column>
-                <Column header="Discover" body={actionBodyTemplate}></Column>
+                <Column header={label[context.selLanguage]["pokemon"]} field="name" sortable body={nameBodyTemplate}></Column>
+                <Column header={label[context.selLanguage]["image"]} body={imageBodyTemplate}></Column>
+                <Column header={label[context.selLanguage]["discover"]} body={actionBodyTemplate}></Column>
             </DataTable>
 
             {pokemonDialog && context.selPokemon ? <PokemonDetail pokemon={context.selPokemon} hideDetail={() => hideDetail()} handleSelectPokemon={(name) => selectPokemon(name)} /> : ""}

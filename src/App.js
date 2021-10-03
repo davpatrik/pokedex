@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import classNames from "classnames";
-import { Route } from "react-router-dom";
+import { Route, useHistory } from "react-router-dom";
 import { CSSTransition } from "react-transition-group";
 
 import { AppTopbar } from "./AppTopbar";
@@ -13,6 +13,9 @@ import { PokedexPage } from "./pages/PokedexPage";
 import { EmptyPage } from "./pages/EmptyPage";
 
 import PrimeReact from "primereact/api";
+
+// Import Utils
+import { label } from "./util/Internationalization";
 
 // Style files
 import "primereact/resources/primereact.min.css";
@@ -35,6 +38,7 @@ const App = () => {
     const [lstPokemon, setLstPokemon] = useState([]);
     const [lstPokemonMap, setLstPokemonData] = useState(new Map());
     const [selPokemon, setSelPokemon] = useState({});
+    const [selLanguage, setSelLanguage] = useState(null);
 
     /*
     Layout vars
@@ -48,12 +52,15 @@ const App = () => {
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
+    const history = useHistory();
+
     PrimeReact.ripple = true;
 
     let menuClick = false;
     let mobileTopbarMenuClick = false;
 
     useEffect(() => {
+        idLanguageSelected();
         if (mobileMenuActive) {
             addClass(document.body, "body-overflow-hidden");
         } else {
@@ -61,22 +68,11 @@ const App = () => {
         }
     }, [mobileMenuActive]);
 
-    const onInputStyleChange = (inputStyle) => {
-        setInputStyle(inputStyle);
-    };
-
-    const onRipple = (e) => {
-        PrimeReact.ripple = e.value;
-        setRipple(e.value);
-    };
-
-    const onLayoutModeChange = (mode) => {
-        setLayoutMode(mode);
-    };
-
-    const onColorModeChange = (mode) => {
-        setLayoutColorMode(mode);
-    };
+    function idLanguageSelected() {
+        if (!selLanguage) {
+            history.push("/");
+        }
+    }
 
     const onWrapperClick = (event) => {
         if (!menuClick) {
@@ -142,22 +138,22 @@ const App = () => {
 
     const menu = [
         {
-            label: "Pages",
+            label: label[selLanguage]["menu_pages"],
             icon: "pi pi-fw pi-clone",
-            items: [{ label: "Pokédex", icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" }],
+            items: [{ label: label[selLanguage]["menu_pokedex"], icon: "pi pi-fw pi-user-edit", to: "/pokedexPage" }],
         },
         {
-            label: "Get Started",
+            label: label[selLanguage]["menu_getStarted"],
             items: [
                 {
-                    label: "Documentation",
+                    label: label[selLanguage]["menu_documentation"],
                     icon: "pi pi-fw pi-question",
                     command: () => {
                         window.location = "https://gitlab.com/davpatrik/pokedex/-/blob/main/README.md";
                     },
                 },
                 {
-                    label: "View Source",
+                    label: label[selLanguage]["menu_viewSource"],
                     icon: "pi pi-fw pi-search",
                     command: () => {
                         window.location = "https://gitlab.com/davpatrik/pokedex.git";
@@ -238,6 +234,8 @@ const App = () => {
     return (
         <AuthContext.Provider
             value={{
+                selLanguage: selLanguage,
+                setSelLanguage: setSelLanguage,
                 lstPokemon: lstPokemon,
                 setLstPokemon: setLstPokemon,
                 selPokemon: selPokemon,
@@ -252,7 +250,7 @@ const App = () => {
                 <AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode} mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick} />
 
                 <div className="layout-sidebar" onClick={onSidebarClick}>
-                    <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
+                    {selLanguage ? <AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} /> : "Sélectionnez une langue / Select a language"}
                 </div>
 
                 <div className="layout-main-container">

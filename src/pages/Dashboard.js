@@ -1,19 +1,36 @@
-import React, { useEffect, useState } from "react";
-// Import prime components
-import { ProgressBar } from "primereact/progressbar";
-import { Card } from "primereact/card";
+import React, { useEffect, useContext } from "react";
+
+import { LanguageSelector } from "../components/LanguageSelector";
+import { label } from "../util/Internationalization";
+
+/*
+Store
+*/
+import { AuthContext } from "../data/AuthContext";
 
 export const Dashboard = (props) => {
     useEffect(() => {}, []);
+
+    /*
+    Context  
+    */
+    const context = useContext(AuthContext);
 
     /**
      * Return
      */
     return (
         <div className="p-grid p-fluid">
-            <Card>
-                <p style={{ width: "100%" }}>{"Welcome, please visit PAGES -> Pokédex to start discovering Pokémons!"}</p>
-            </Card>
+            <div className="p-col-12 p-lg-12">
+                <LanguageSelector />
+                {context.selLanguage ? (
+                    <div className="card card-w-title">
+                        <p style={{ width: "100%" }}>{label[context.selLanguage]["welcomeMessage"]}</p>
+                    </div>
+                ) : (
+                    ""
+                )}
+            </div>
         </div>
     );
 };

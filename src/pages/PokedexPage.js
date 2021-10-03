@@ -11,6 +11,11 @@ Services
 import PokemonDataService from "../service/PokemonDataService";
 import { PokemonList } from "../components/PokemonList";
 
+/*
+Utils
+*/
+import { label } from "../util/Internationalization";
+
 export const PokedexPage = (props) => {
     /*
     Context  
@@ -26,7 +31,7 @@ export const PokedexPage = (props) => {
 
     const loadPokemonList = () => {
         if (!context.lstPokemon || context.lstPokemon.length === 0) {
-            PokemonDataService.list("?offset=0&limit=150").then((response) => {
+            PokemonDataService.list("?offset=0&limit=300").then((response) => {
                 context.setLstPokemon(response.results);
             });
         }
@@ -35,7 +40,7 @@ export const PokedexPage = (props) => {
     return (
         <div className="grid crud-demo">
             <div className="col-12">
-                <div className="card">{!context.lstPokemon || context.lstPokemon.length === 0 ? "Loading.." : <PokemonList lstPokemon={context.lstPokemon} />}</div>
+                <div className="card">{!context.lstPokemon || context.lstPokemon.length === 0 ? label[context.selLanguage]["loading"] : <PokemonList lstPokemon={context.lstPokemon} />}</div>
             </div>
         </div>
     );
